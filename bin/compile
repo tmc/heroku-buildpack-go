@@ -125,12 +125,11 @@ else
     cd - >/dev/null
 fi
 
-mkdir -p $build/bin
-GOBIN=$build/bin export GOBIN
-GOROOT=$cache/$ver/go export GOROOT
-GOPATH=$build/.heroku/go export GOPATH
-PATH=$GOROOT/bin:$PATH
+cp -R $cache/$ver/go $build/.goroot
 
+GOROOT=$build/.goroot export GOROOT
+GOPATH=$build/.go export GOPATH
+PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 if ! (test -d $build/Godeps || (which hg >/dev/null && which bzr >/dev/null))
 then
@@ -235,5 +234,6 @@ fi
 rm -rf $build/.heroku
 
 mkdir -p $build/.profile.d
-echo 'PATH=$PATH:$HOME/bin' > $build/.profile.d/go.sh
-cp $buildpack/vendor/concurrency.sh $build/.profile.d/
+echo 'PATH=$PATH:$HOME/.goroot/bin:$HOME/.go/bin:$HOME/bin' > $build/.profile.d/go.sh
+echo 'export GOROOT=$HOME/.goroot' >> $build/.profile.d/go.sh
+echo 'export GOPATH=$HOME/.go' >> $build/.profile.d/go.sh
