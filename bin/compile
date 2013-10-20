@@ -64,10 +64,11 @@ else
     echo " done"
 fi
 
-GOROOT=$cache/go-$ver/go export GOROOT
-GOPATH=$build/.heroku/g export GOPATH
-PATH=$GOROOT/bin:$PATH
+cp -R $cache/go-$ver/go $build/.goroot
 
+GOROOT=$build/.goroot export GOROOT
+GOPATH=$build/.go export GOPATH
+PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 if ! (test -d $build/Godeps || (which hg >/dev/null && which bzr >/dev/null))
 then
@@ -111,4 +112,6 @@ mv $GOPATH/bin/* $build/bin
 rm -rf $build/.heroku
 
 mkdir -p $build/.profile.d
-echo 'PATH=$PATH:$HOME/bin' > $build/.profile.d/go.sh
+echo 'PATH=$PATH:$HOME/.goroot/bin:$HOME/.go/bin:$HOME/bin' > $build/.profile.d/go.sh
+echo 'export GOROOT=$HOME/.goroot' >> $build/.profile.d/go.sh
+echo 'export GOPATH=$HOME/.go' >> $build/.profile.d/go.sh
